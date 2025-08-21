@@ -7,23 +7,25 @@ import InputText from "@/components/InputText/InputText";
 import Radio from "@/components/Radio/Radio";
 import Section from "@/components/Section/Section";
 import useAddressBook from "@/hooks/useAddressBook";
+import { useFormFields } from "@/hooks/useFormFields";
 
 import styles from "./App.module.css";
 import { Address as AddressType } from "./types";
 
 function App() {
   /**
-   * Form fields states
-   * TODO: Write a custom hook to set form fields in a more generic way:
-   * - Hook must expose an onChange handler to be used by all <InputText /> and <Radio /> components
-   * - Hook must expose all text form field values, like so: { postCode: '', houseNumber: '', ...etc }
-   * - Remove all individual React.useState
-   * - Remove all individual onChange handlers, like handlePostCodeChange for example
+   * Form fields states using custom hook
    */
-  const [postCode, setPostCode] = React.useState("");
-  const [houseNumber, setHouseNumber] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
+  const addressFormFields = useFormFields({
+    postCode: "",
+    houseNumber: ""
+  });
+  
+  const personFormFields = useFormFields({
+    firstName: "",
+    lastName: ""
+  });
+  
   const [selectedAddress, setSelectedAddress] = React.useState("");
   /**
    * Results states
@@ -38,18 +40,6 @@ function App() {
   /**
    * Text fields onChange handlers
    */
-  const handlePostCodeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setPostCode(e.target.value);
-
-  const handleHouseNumberChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setHouseNumber(e.target.value);
-
-  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFirstName(e.target.value);
-
-  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setLastName(e.target.value);
-
   const handleSelectedAddressChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => setSelectedAddress(e.target.value);
@@ -73,6 +63,11 @@ function App() {
   const handlePersonSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!personFormFields.values.firstName || !personFormFields.values.lastName) {
+      setError("First name and last name fields mandatory!");
+      return;
+    }
+
     if (!selectedAddress || !addresses.length) {
       setError(
         "No address selected, try to select an address or find one if you haven't"
@@ -89,7 +84,7 @@ function App() {
       return;
     }
 
-    addAddress({ ...foundAddress, firstName, lastName });
+    addAddress({ ...foundAddress, firstName: personFormFields.values.firstName, lastName: personFormFields.values.lastName });
   };
 
   return (
@@ -109,16 +104,16 @@ function App() {
             <div className={styles.formRow}>
               <InputText
                 name="postCode"
-                onChange={handlePostCodeChange}
+                onChange={addressFormFields.handleChange}
                 placeholder="Post Code"
-                value={postCode}
+                value={addressFormFields.values.postCode}
               />
             </div>
             <div className={styles.formRow}>
               <InputText
                 name="houseNumber"
-                onChange={handleHouseNumberChange}
-                value={houseNumber}
+                onChange={addressFormFields.handleChange}
+                value={addressFormFields.values.houseNumber}
                 placeholder="House number"
               />
             </div>
@@ -147,16 +142,16 @@ function App() {
                 <InputText
                   name="firstName"
                   placeholder="First name"
-                  onChange={handleFirstNameChange}
-                  value={firstName}
+                  onChange={personFormFields.handleChange}
+                  value={personFormFields.values.firstName}
                 />
               </div>
               <div className={styles.formRow}>
                 <InputText
                   name="lastName"
                   placeholder="Last name"
-                  onChange={handleLastNameChange}
-                  value={lastName}
+                  onChange={personFormFields.handleChange}
+                  value={personFormFields.values.lastName}
                 />
               </div>
               <Button type="submit">Add to addressbook</Button>

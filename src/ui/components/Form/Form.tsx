@@ -1,24 +1,9 @@
 import React, { FunctionComponent } from 'react';
+import { FormProps } from '@/types';
 
 import Button from '../Button/Button';
 import InputText from '../InputText/InputText';
 import $ from './Form.module.css';
-
-interface FormEntry {
-  name: string;
-  placeholder: string;
-  // TODO: Defined a suitable type for extra props
-  // This type should cover all different of attribute types
-  extraProps: any;
-}
-
-interface FormProps {
-  label: string;
-  loading: boolean;
-  formEntries: FormEntry[];
-  onFormSubmit: () => void;
-  submitText: string;
-}
 
 const Form: FunctionComponent<FormProps> = ({
   label,
