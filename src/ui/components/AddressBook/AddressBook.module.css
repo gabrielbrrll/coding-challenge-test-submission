@@ -1,57 +1,52 @@
 .addressBook {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.remove {
-  --color-brand: var(--color-accent);
-  margin-left: auto;
-}
-
-.item {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-}
-
-.item address {
-  font-size: 0.85em;
-}
-
-.item h3 {
-  margin: 0 0 0.5em;
 }
 
 .personGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.personGroup h3 {
-  margin: 0 0 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-accent);
-  font-size: 1.1em;
+.personGroup:last-child {
+  border-bottom: none;
+}
+
+.personName {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-body1);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 .addressItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.addressItem:last-child {
-  border-bottom: none;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xs) 0;
 }
 
 .addressContent {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.addressBullet {
+  color: var(--color-primary);
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .addressContent address {
-  font-size: 0.85em;
+  font-size: var(--font-size-body2);
+  color: var(--color-text-secondary);
+}
+
+.remove {
+  margin-left: auto;
 }

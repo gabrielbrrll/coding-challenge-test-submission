@@ -1,5 +1,5 @@
 import { Address, DuplicateValidationResult } from "@/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 // Define a type for the slice state
@@ -41,7 +41,7 @@ const checkDuplicateAddress = (addresses: Address[], newAddress: Address): Dupli
 };
 
 export const addressBookSlice = createSlice({
-  name: "address",
+  name: "addressBook",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
@@ -66,24 +66,26 @@ export const { addAddress, removeAddress, updateAddresses } =
 // Selectors
 export const selectAddress = (state: RootState) => state.addressBook.addresses;
 
-// Selector to get grouped addresses by person
-export const selectGroupedAddresses = (state: RootState) => {
-  const addresses = state.addressBook.addresses;
-  const groups = addresses.reduce((acc: { [key: string]: Address[] }, address) => {
-    const key = `${address.firstName}_${address.lastName}`;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(address);
-    return acc;
-  }, {});
+// Memoized selector to get grouped addresses by person
+export const selectGroupedAddresses = createSelector(
+  [selectAddress],
+  (addresses) => {
+    const groups = addresses.reduce((acc: { [key: string]: Address[] }, address) => {
+      const key = `${address.firstName}_${address.lastName}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(address);
+      return acc;
+    }, {});
 
-  return Object.entries(groups).map(([, addresses]) => ({
-    firstName: addresses[0].firstName,
-    lastName: addresses[0].lastName,
-    addresses: addresses.sort((a, b) => a.street.localeCompare(b.street))
-  }));
-};
+    return Object.entries(groups).map(([, addresses]) => ({
+      firstName: addresses[0].firstName,
+      lastName: addresses[0].lastName,
+      addresses: addresses.sort((a, b) => a.street.localeCompare(b.street))
+    }));
+  }
+);
 
 // Function to validate address before adding (used outside Redux)
 export const validateAddressForDuplicates = (addresses: Address[], newAddress: Address): DuplicateValidationResult => {

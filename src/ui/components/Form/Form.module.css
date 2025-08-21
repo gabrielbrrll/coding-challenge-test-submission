@@ -22,15 +22,22 @@
 
 .formFields {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .formFields {
+    flex-direction: column;
+  }
 }
 
 .formRow {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  flex: 1;
 }
 
 .errorContainer {

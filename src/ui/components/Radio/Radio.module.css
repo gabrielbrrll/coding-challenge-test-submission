@@ -23,15 +23,15 @@
 .radioLabel {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
   background: var(--color-surface);
   border: 2px solid var(--color-border);
   border-radius: var(--border-radius-md);
   transition: all var(--transition-normal);
   cursor: pointer;
   position: relative;
-  min-height: 80px;
+  min-height: 60px;
   box-shadow: var(--elevation-1);
 }
 
@@ -157,8 +157,8 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .radioLabel {
-    padding: var(--spacing-md);
-    min-height: 60px;
+    padding: var(--spacing-sm);
+    min-height: 50px;
   }
   
   .radioIndicator {
