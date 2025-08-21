@@ -12,11 +12,8 @@ interface AddressSearchProps {
   error?: string;
   selectedAddress: string;
   addressFormFields: ReturnType<typeof useFormFields>;
-  personFormFields: ReturnType<typeof useFormFields>;
-  personFormError?: string;
   onAddressSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   onSelectedAddressChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPersonSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const AddressSearch: React.FC<AddressSearchProps> = ({

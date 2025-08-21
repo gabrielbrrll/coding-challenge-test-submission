@@ -19,7 +19,14 @@ const AddressBook = () => {
   }, []);
 
   return (
-    <div className={$.addressBook}>
+    <section className={$.addressBook} aria-labelledby="addressbook-section-title">
+      <div className={$.sectionHeader}>
+        <span className={$.sectionIcon} aria-hidden="true">📚</span>
+        <h2 className={$.sectionTitle} id="addressbook-section-title">
+          Your Address Book
+          <span className={$.addressCount}>({addresses.length})</span>
+        </h2>
+      </div>
       {!loading && (
         <>
           {addresses.length === 0 && <p>No addresses found, try add one 😉</p>}
@@ -50,7 +57,7 @@ const AddressBook = () => {
           })}
         </>
       )}
-    </div>
+    </section>
   );
 };
 

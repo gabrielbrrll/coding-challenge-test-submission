@@ -2,7 +2,7 @@ import React from "react";
 
 import AddressSearch from "./ui/components/AddressSearch/AddressSearch";
 import PersonForm from "./ui/components/PersonForm/PersonForm";
-import AddressBookSection from "./ui/components/AddressBookSection/AddressBookSection";
+import AddressBook from "./ui/components/AddressBook/AddressBook";
 import Button from "./ui/components/Button/Button";
 import { useAddressSearch } from "./hooks/useAddressSearch";
 import { useAddressForm } from "./hooks/useAddressForm";
@@ -27,7 +27,6 @@ function App() {
     error: addressFormError,
     handleAddressSubmit,
     clearAddressForm,
-    setError: setAddressFormError
   } = useAddressForm(searchAddresses);
 
   const {
@@ -35,14 +34,13 @@ function App() {
     error: personFormError,
     handlePersonSubmit,
     clearPersonForm,
-    setError: setPersonFormError
   } = usePersonForm(selectedAddress, addresses);
 
 
   const handleClearAllFields = () => {
     clearAddressForm();
     clearPersonForm();
-    clearResults(); // This now also clears selection
+    clearResults();
   };
 
   return (
@@ -92,7 +90,7 @@ function App() {
         </div>
 
         <div className={styles.rightColumn}>
-          <AddressBookSection />
+          <AddressBook />
         </div>
       </div>
     </main>
