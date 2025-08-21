@@ -21,8 +21,13 @@ export interface FormEntry {
 
 export interface FormProps {
   label: string;
-  loading: boolean;
+  loading?: boolean;
   formEntries: FormEntry[];
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitText: string;
+  error?: string;
+  clearButton?: {
+    text: string;
+    onClick: () => void;
+  };
 }
