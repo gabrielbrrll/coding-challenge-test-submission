@@ -7,13 +7,39 @@ interface RadioProps {
   name: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   children: React.ReactNode;
+  checked?: boolean;
+  disabled?: boolean;
 }
 
-const Radio: FunctionComponent<RadioProps> = ({ children, id, name, onChange }) => {
+const Radio: FunctionComponent<RadioProps> = ({ 
+  children, 
+  id, 
+  name, 
+  onChange, 
+  checked = false,
+  disabled = false
+}) => {
   return (
-    <div className={$.radio}>
-      <input type="radio" id={id} name={name} onChange={onChange} value={id} />
-      <label htmlFor={id}>{children}</label>
+    <div className={`${$.radio} ${checked ? $.radioChecked : ''} ${disabled ? $.radioDisabled : ''}`}>
+      <input 
+        type="radio" 
+        id={id} 
+        name={name} 
+        onChange={onChange} 
+        value={id}
+        checked={checked}
+        disabled={disabled}
+        className={$.radioInput}
+        aria-describedby={`${id}-content`}
+      />
+      <label htmlFor={id} className={$.radioLabel}>
+        <div className={$.radioIndicator}>
+          <div className={$.radioInner}></div>
+        </div>
+        <div className={$.radioContent} id={`${id}-content`}>
+          {children}
+        </div>
+      </label>
     </div>
   );
 };

@@ -4,10 +4,7 @@ import Address from "@/components/Address/Address";
 import AddressBook from "@/components/AddressBook/AddressBook";
 import Button from "@/components/Button/Button";
 import Form from "@/components/Form/Form";
-import InputText from "@/components/InputText/InputText";
 import Radio from "@/components/Radio/Radio";
-import Section from "@/components/Section/Section";
-import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import useAddressBook from "@/hooks/useAddressBook";
 import { useFormFields } from "@/hooks/useFormFields";
 import transformAddress, { RawAddressModel } from "./core/models/address";
@@ -55,13 +52,16 @@ function App() {
     e.preventDefault();
     setError(undefined);
 
-    // Validation for address form
-    if (!addressFormFields.values.postCode || !addressFormFields.values.houseNumber) {
+    // Validation for address form - ensure strings are properly handled
+    const postCodeStr = String(addressFormFields.values.postCode).trim();
+    const houseNumberStr = String(addressFormFields.values.houseNumber).trim();
+    
+    if (postCodeStr === '' || houseNumberStr === '') {
       setError("Post code and house number are required!");
       return;
     }
 
-    if (addressFormFields.values.postCode.length < 4) {
+    if (postCodeStr.length < 4) {
       setError("Post code must be at least 4 characters!");
       return;
     }
@@ -73,7 +73,7 @@ function App() {
     
     try {
       const baseUrl = process.env.NEXT_PUBLIC_URL || window.location.origin;
-      const url = `${baseUrl}/api/getAddresses?postcode=${addressFormFields.values.postCode}&streetnumber=${addressFormFields.values.houseNumber}`;
+      const url = `${baseUrl}/api/getAddresses?postcode=${postCodeStr}&streetnumber=${houseNumberStr}`;
       
       const response = await fetch(url);
       const data = await response.json();
@@ -133,11 +133,12 @@ function App() {
       return;
     }
 
-    // Create the new address with person info
+    // Create the new address with person info and unique ID
     const newAddress: AddressType = {
       ...foundAddress,
       firstName: personFormFields.values.firstName.trim(),
-      lastName: personFormFields.values.lastName.trim()
+      lastName: personFormFields.values.lastName.trim(),
+      id: `${foundAddress.id}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
     };
 
     // Validate for duplicates
@@ -175,96 +176,144 @@ function App() {
   };
 
   return (
-    <main>
-      <Section>
-        <h1>
-          Create your own address book!
-          <br />
-          <small>
-            Enter an address by postcode add personal info and done! 👏
-          </small>
+    <main className={styles.app}>
+      <header className={styles.header}>
+        <h1 className={styles.headerTitle}>
+          Create Your Address Book
         </h1>
-        <Form
-          label="🏠 Find an address"
-          loading={loading}
-          formEntries={[
-            {
-              name: "postCode",
-              placeholder: "Post Code",
-              extraProps: {
-                value: addressFormFields.values.postCode,
-                onChange: addressFormFields.handleChange,
-                required: true,
-                disabled: loading
-              }
-            },
-            {
-              name: "houseNumber", 
-              placeholder: "House number",
-              extraProps: {
-                value: addressFormFields.values.houseNumber,
-                onChange: addressFormFields.handleChange,
-                required: true,
-                disabled: loading
-              }
-            }
-          ]}
-          onFormSubmit={handleAddressSubmit}
-          submitText="Find"
-          error={error}
-        />
-        {addresses.length > 0 &&
-          addresses.map((address) => {
-            return (
-              <Radio
-                name="selectedAddress"
-                id={address.id}
-                key={address.id}
-                onChange={handleSelectedAddressChange}
-              >
-                <Address {...address} />
-              </Radio>
-            );
-          })}
-        {selectedAddress && (
-          <Form
-            label="✏️ Add personal info to address"
-            formEntries={[
-              {
-                name: "firstName",
-                placeholder: "First name",
-                extraProps: {
-                  value: personFormFields.values.firstName,
-                  onChange: personFormFields.handleChange,
-                  required: true
+        <p className={styles.headerSubtitle}>
+          Enter a postcode and house number to find addresses, then add personal information to build your address book.
+        </p>
+      </header>
+      
+      <div className={styles.mainContent}>
+        <section className={styles.addressSearchSection} aria-labelledby="search-section-title">
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionIcon} aria-hidden="true">🏠</span>
+            <h2 className={styles.sectionTitle} id="search-section-title">
+              Find Address
+            </h2>
+          </div>
+          <div className={styles.formSection}>
+            <Form
+              label="Search for Address"
+              loading={loading}
+              formEntries={[
+                {
+                  name: "postCode",
+                  placeholder: "Post Code",
+                  extraProps: {
+                    value: addressFormFields.values.postCode,
+                    onChange: addressFormFields.handleChange,
+                    required: true,
+                    disabled: loading,
+                    'aria-describedby': error ? 'address-error' : undefined
+                  }
+                },
+                {
+                  name: "houseNumber", 
+                  placeholder: "House Number",
+                  extraProps: {
+                    value: addressFormFields.values.houseNumber,
+                    onChange: addressFormFields.handleChange,
+                    required: true,
+                    disabled: loading,
+                    'aria-describedby': error ? 'address-error' : undefined
+                  }
                 }
-              },
-              {
-                name: "lastName",
-                placeholder: "Last name", 
-                extraProps: {
-                  value: personFormFields.values.lastName,
-                  onChange: personFormFields.handleChange,
-                  required: true
-                }
-              }
-            ]}
-            onFormSubmit={handlePersonSubmit}
-            submitText="Add to addressbook"
-          />
-        )}
+              ]}
+              onFormSubmit={handleAddressSubmit}
+              submitText="Find Address"
+              error={error}
+              errorId="address-error"
+            />
+          </div>
+          {loading && (
+            <div className={styles.loadingContainer}>
+              <div className={styles.loadingSpinner} aria-hidden="true"></div>
+              <p>Searching for addresses...</p>
+            </div>
+          )}
 
-        <Button 
-          variant="secondary" 
-          onClick={handleClearAllFields}
-        >
-          Clear all fields
-        </Button>
-      </Section>
+          {addresses.length > 0 && (
+            <div className={styles.addressResults}>
+              <h3 className={styles.addressResultsTitle}>
+                Select an Address
+                <span className={styles.addressResultsCount} aria-label={`${addresses.length} addresses found`}>
+                  {addresses.length}
+                </span>
+              </h3>
+              <div className={styles.addressGrid} role="radiogroup" aria-labelledby="address-selection-title">
+                <span id="address-selection-title" className="sr-only">Choose an address from the results</span>
+                {addresses.map((address) => (
+                  <Radio
+                    name="selectedAddress"
+                    id={address.id}
+                    key={address.id}
+                    onChange={handleSelectedAddressChange}
+                    checked={selectedAddress === address.id}
+                  >
+                    <Address {...address} />
+                  </Radio>
+                ))}
+              </div>
+            </div>
+          )}
+          {selectedAddress && (
+            <div className={styles.personFormSection}>
+              <Form
+                label="Add Personal Information"
+                formEntries={[
+                  {
+                    name: "firstName",
+                    placeholder: "First Name",
+                    extraProps: {
+                      value: personFormFields.values.firstName,
+                      onChange: personFormFields.handleChange,
+                      required: true,
+                      'aria-describedby': error ? 'person-error' : undefined
+                    }
+                  },
+                  {
+                    name: "lastName",
+                    placeholder: "Last Name", 
+                    extraProps: {
+                      value: personFormFields.values.lastName,
+                      onChange: personFormFields.handleChange,
+                      required: true,
+                      'aria-describedby': error ? 'person-error' : undefined
+                    }
+                  }
+                ]}
+                onFormSubmit={handlePersonSubmit}
+                submitText="Add to Address Book"
+                error={error}
+                errorId="person-error"
+              />
+            </div>
+          )}
 
-      <Section variant="dark">
-        <AddressBook />
-      </Section>
+          <div className={styles.clearButtonContainer}>
+            <Button 
+              variant="secondary" 
+              onClick={handleClearAllFields}
+              aria-label="Clear all form fields and reset the application"
+            >
+              Clear All Fields
+            </Button>
+          </div>
+        </section>
+
+        <section className={styles.addressBookSection} aria-labelledby="addressbook-section-title">
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionIcon} aria-hidden="true">📚</span>
+            <h2 className={styles.sectionTitle} id="addressbook-section-title">
+              Your Address Book
+            </h2>
+          </div>
+          <AddressBook />
+        </section>
+      </div>
     </main>
   );
 }
