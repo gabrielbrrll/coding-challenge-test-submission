@@ -7,3 +7,15 @@ export interface Address {
   postcode: string;
   street: string;
 }
+
+export interface PersonGroup {
+  firstName: string;
+  lastName: string;
+  addresses: Address[];
+}
+
+export interface DuplicateValidationResult {
+  isDuplicate: boolean;
+  existingAddress?: Address;
+  personExists?: boolean;
+}

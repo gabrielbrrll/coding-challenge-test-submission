@@ -29,30 +29,31 @@ const generateMockAddresses = (postcode: string, streetNumber: string) => {
   const streetMapping: string = (streetNumberToStreetMapping as any)[streetNumberFirstChar];
 
   if (postcodeMapping) {
+    const baseNumber = parseInt(streetNumber);
     return [
       {
         city: postcodeMapping,
-        houseNumber: '1',
+        houseNumber: streetNumber,
         postcode,
         street: `${streetNumber} ${streetMapping}`,
-        lat: Math.random(),
-        long: Math.random()
+        lat: Math.random().toString(),
+        lon: Math.random().toString()
       },
       {
         city: postcodeMapping,
-        houseNumber: '2',
+        houseNumber: (baseNumber + 2).toString(),
         postcode,
-        street: `${streetNumber} ${streetMapping}`,
-        lat: Math.random(),
-        long: Math.random()
+        street: `${baseNumber + 2} ${streetMapping}`,
+        lat: Math.random().toString(),
+        lon: Math.random().toString()
       },
       {
         city: postcodeMapping,
-        houseNumber: '3',
+        houseNumber: (baseNumber + 4).toString(),
         postcode,
-        street: `${streetNumber} ${streetMapping}`,
-        lat: Math.random(),
-        long: Math.random()
+        street: `${baseNumber + 4} ${streetMapping}`,
+        lat: Math.random().toString(),
+        lon: Math.random().toString()
       }
     ];
   }
